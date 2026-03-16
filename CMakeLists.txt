@@ -5,17 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ──────────────────────────────────────────────
-#  Compiler flags: warnings are errors
-# ──────────────────────────────────────────────
-add_compile_options(-Wall -Wextra -Wpedantic -Werror)
-
-# ──────────────────────────────────────────────
-#  Sanitizers (Address + Undefined Behavior)
-# ──────────────────────────────────────────────
-add_compile_options(-fsanitize=address,undefined -fno-sanitize-recover=all)
-add_link_options(-fsanitize=address,undefined)
-
-# ──────────────────────────────────────────────
 #  Google Test (fetched automatically)
 # ──────────────────────────────────────────────
 include(FetchContent)
@@ -28,10 +17,15 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # ──────────────────────────────────────────────
-#  BigInteger library (student implements this)
+#  BigInteger library
 # ──────────────────────────────────────────────
 add_library(big_integer STATIC big_integer.cpp)
 target_include_directories(big_integer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Strict flags apply ONLY to the bigint code, not to GoogleTest
+target_compile_options(big_integer PRIVATE -Wall -Wextra -Wpedantic -Werror)
+target_compile_options(big_integer PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=all)
+target_link_options(big_integer PUBLIC -fsanitize=address,undefined)
 
 # ──────────────────────────────────────────────
 #  Tests
